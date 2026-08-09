@@ -1,59 +1,180 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ComunidadESPOL
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma web para la gestión y difusión de comunidades estudiantiles de la ESPOL.
 
-## About Laravel
+Proyecto de la asignatura **Lenguajes de Programación** — FIEC, ESPOL, PAO 1 2026–2027.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Integrantes:** Milena Pazmiño · Gabriel Peláez · Carla Gutiérrez
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+- **Back-end:** PHP 8.2 + Laravel 12 (API REST)
+- **Front-end:** TypeScript + React
+- **Base de datos:** MySQL 8
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Requisitos previos
 
-## Laravel Sponsors
+- [XAMPP](https://www.apachefriends.org/) con **PHP 8.2 o superior** (solo se usa el módulo MySQL)
+- [Composer](https://getcomposer.org/)
+- [Git](https://git-scm.com/)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+> En `C:\xampp\php\php.ini` deben estar activas (sin `;` al inicio) las extensiones:
+> `extension=zip`, `extension=pdo_mysql`, `extension=mbstring`
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Instalación
 
-## Contributing
+### 1. Clonar el repositorio
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/USUARIO/comunidad-espol.git
+cd comunidad-espol
+```
 
-## Code of Conduct
+### 2. Instalar dependencias
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+### 3. Configurar el entorno
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+copy .env.example .env
+php artisan key:generate
+```
 
-## License
+### 4. Crear la base de datos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Enciende **MySQL** desde el panel de XAMPP, entra a `http://localhost/phpmyadmin` y crea una base de datos llamada `comunidad_espol` con cotejamiento `utf8mb4_unicode_ci`.
+
+### 5. Configurar la conexión
+
+Abre el archivo `.env` y deja estas líneas así (descoméntalas si tienen `#`):
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=comunidad_espol
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 6. Crear las tablas y cargar datos de prueba
+
+```bash
+php artisan migrate --seed
+```
+
+### 7. Levantar el servidor
+
+```bash
+php artisan serve
+```
+
+La API queda disponible en `http://localhost:8000`.
+
+---
+
+## Datos de prueba
+
+| Usuario | Correo | Matrícula |
+|---|---|---|
+| Ana Torres | ana@espol.edu.ec | 202201001 |
+| Luis Mora | luis@espol.edu.ec | 202201002 |
+| Sofía Vera | sofia@espol.edu.ec | 202201003 |
+
+Contraseña de todos: `password`
+
+Comunidades: Capítulo IEEE ESPOL (id 1), ACM ESPOL (id 2), Grupo de Teatro (id 3).
+
+---
+
+## Endpoints
+
+Todos con prefijo `/api`. Enviar siempre los headers:
+
+```
+Accept: application/json
+Content-Type: application/json
+```
+
+### Comunidades — Milena
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/comunidades` | Catálogo, con filtros por categoría, facultad y nombre |
+| `GET` | `/comunidades/{id}` | Perfil de una comunidad |
+| `POST` | `/comunidades` | Registrar comunidad |
+| `PUT` | `/comunidades/{id}` | Editar comunidad |
+
+### Membresías — Gabriel
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/comunidades/{id}/solicitudes` | Solicitar ingreso a una comunidad |
+| `PATCH` | `/solicitudes/{id}` | Aprobar o rechazar una solicitud |
+| `GET` | `/comunidades/{id}/miembros` | Padrón, filtrable por `estado` y `rol` |
+
+### Actividades — Carla
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/actividades` | Cartelera, filtrable por comunidad |
+| `POST` | `/comunidades/{id}/actividades` | Registrar actividad |
+| `PUT` | `/actividades/{id}` | Editar actividad |
+| `DELETE` | `/actividades/{id}` | Eliminar actividad |
+
+---
+
+## Flujo de trabajo con Git
+
+Cada integrante trabaja en su propia rama:
+
+| Integrante | Rama |
+|---|---|
+| Milena | `feature/comunidades` |
+| Gabriel | `feature/membresias` |
+| Carla | `feature/actividades` |
+
+```bash
+git checkout -b feature/mi-modulo
+# ... trabajar ...
+git add .
+git commit -m "Descripción del cambio"
+git push -u origin feature/mi-modulo
+```
+
+**Antes de empezar a trabajar cada día:**
+
+```bash
+git checkout main
+git pull
+git checkout feature/mi-modulo
+git merge main
+```
+
+> En `routes/api.php` cada quien agrega sus rutas en su bloque comentado con su nombre. Es el único archivo donde puede haber conflictos.
+
+---
+
+## Comandos útiles
+
+```bash
+php artisan serve              # Levantar el servidor
+php artisan migrate:fresh --seed   # Borrar y recrear todo (¡borra los datos!)
+php artisan route:list         # Ver todas las rutas registradas
+```
+
+---
+
+## Notas
+
+- Los archivos `.env` y la carpeta `vendor/` **no se suben** al repositorio.
+- En esta etapa los endpoints no requieren autenticación; el `user_id` se envía en el cuerpo de la petición. El login se implementará en el siguiente avance.
