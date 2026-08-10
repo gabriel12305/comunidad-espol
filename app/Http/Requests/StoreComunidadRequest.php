@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+// Desarrollado por Milena Pazmiño
 class StoreComunidadRequest extends FormRequest
 {
     public function authorize(): bool{

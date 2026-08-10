@@ -9,6 +9,8 @@ use App\Models\Comunidad;
 use App\Models\Membresia;
 use Illuminate\Http\Request;
 
+// Desarrollado por Milena Pazmiño
+// Requerimientos: Registrar comunidad (escritura) y Explorar catálogo de comunidades (lectura)
 class ComunidadController extends Controller
 {
     // GET /api/comunidades
