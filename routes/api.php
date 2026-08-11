@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\MembresiaController;
 use App\Http\Controllers\Api\ComunidadController;
+use App\Http\Controllers\Api\ActividadController;
 
 // ===== Membresías — Gabriel =====
 Route::post('/comunidades/{comunidadId}/solicitudes', [MembresiaController::class, 'solicitar']);
@@ -35,8 +36,9 @@ Route::put('/comunidades/{id}', [ComunidadController::class, 'update']);
 
 
 
-// ===== Carla =====
-
+// ===== Actividades — Carla =====
+Route::post('/comunidades/{comunidadId}/actividades', [ActividadController::class, 'store']);
+Route::get('/comunidades/{comunidadId}/actividades', [ActividadController::class, 'historial']);
 
 
 
