@@ -37,6 +37,9 @@ export interface Membresia {
   comunidad?: Comunidad;
 }
 
+export type TipoActividad = 'reunion' | 'taller' | 'charla' | 'evento_social' | 'otro';
+export type Periodo = 'proximas' | 'pasadas';
+
 export interface Actividad {
   id: number;
   comunidad_id: number;
@@ -49,12 +52,24 @@ export interface Actividad {
   updated_at: string;
 }
 
-// ===== Respuestas de la API =====
+export interface ActividadFormData {
+  titulo: string;
+  tipo: TipoActividad | '';
+  fecha: string;
+  lugar: string;
+  descripcion: string;
+}
 
 export interface PadronResponse {
   comunidad: string;
   total: number;
   data: Membresia[];
+}
+
+export interface ActividadesResponse {
+  comunidad: string;
+  total: number;
+  data: Actividad[];
 }
 
 export interface MensajeResponse<T> {
