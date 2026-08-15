@@ -105,33 +105,31 @@ Accept: application/json
 Content-Type: application/json
 ```
 
+Los códigos de estado usados son: `200` (OK), `201` (creado), `404` (no encontrado), `409` (conflicto con el estado actual) y `422` (error de validación).
+
 ### Comunidades — Milena
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `GET` | `/comunidades` | Catálogo, con filtros por categoría, facultad y nombre |
-| `GET` | `/comunidades/{id}` | Perfil de una comunidad |
-| `POST` | `/comunidades` | Registrar comunidad |
-| `PUT` | `/comunidades/{id}` | Editar comunidad |
+| Método | Ruta | Descripción | Respuesta |
+|---|---|---|---|
+| `GET` | `/comunidades` | Catálogo, con filtros por categoría, facultad y nombre | `{ data: Comunidad[] }` |
+| `GET` | `/comunidades/{id}` | Perfil de una comunidad. Devuelve 404 si el id no existe o no es numérico | `{ data: Comunidad }` |
+| `POST` | `/comunidades` | Registrar comunidad | `{ data: Comunidad }` |
+| `PUT` | `/comunidades/{id}` | Editar comunidad | `{ data: Comunidad }` |
 
 ### Membresías — Gabriel
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `POST` | `/comunidades/{id}/solicitudes` | Solicitar ingreso a una comunidad |
-| `PATCH` | `/solicitudes/{id}` | Aprobar o rechazar una solicitud |
-| `GET` | `/comunidades/{id}/miembros` | Padrón, filtrable por `estado` y `rol` |
+| Método | Ruta | Descripción | Respuesta |
+|---|---|---|---|
+| `POST` | `/comunidades/{id}/solicitudes` | Solicitar ingreso. Body: `{ user_id }`. Devuelve 409 si ya existe una membresía | `{ message, data: Membresia }` |
+| `PATCH` | `/solicitudes/{id}` | Aprobar o rechazar. Body: `{ estado }` con valor `aprobada` o `rechazada`. Devuelve 409 si la solicitud ya fue resuelta | `{ message, data: Membresia }` |
+| `GET` | `/comunidades/{id}/miembros` | Padrón. Filtros opcionales por query string: `?estado=` y `?rol=` | `{ comunidad, total, data: Membresia[] }` |
 
 ### Actividades — Carla
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `GET` | `/actividades` | Cartelera, filtrable por comunidad |
-| `POST` | `/comunidades/{id}/actividades` | Registrar actividad |
-| `PUT` | `/actividades/{id}` | Editar actividad |
-| `DELETE` | `/actividades/{id}` | Eliminar actividad |
-
----
+| Método | Ruta | Descripción | Respuesta |
+|---|---|---|---|
+| `POST` | `/comunidades/{id}/actividades` | Registrar actividad | — |
+| `GET` | `/comunidades/{id}/actividades` | Historial de actividades de una comunidad | — |
 
 ## Flujo de trabajo con Git
 
@@ -178,3 +176,88 @@ php artisan route:list         # Ver todas las rutas registradas
 
 - Los archivos `.env` y la carpeta `vendor/` **no se suben** al repositorio.
 - En esta etapa los endpoints no requieren autenticación; el `user_id` se envía en el cuerpo de la petición. El login se implementará en el siguiente avance.
+
+---
+
+## Instalación del frontend
+
+Requisito adicional: [Node.js](https://nodejs.org/) 20 o superior.
+
+### 1. Instalar dependencias
+
+```bash
+cd frontend
+npm install
+```
+
+### 2. Configurar el entorno
+
+```bash
+copy .env.example .env
+```
+
+El archivo debe contener la URL de la API:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+> Si cambias el `.env`, hay que reiniciar `npm run dev`. Las variables se leen al arrancar.
+
+### 3. Levantar el servidor de desarrollo
+
+```bash
+npm run dev
+```
+
+El frontend queda en `http://localhost:5173`.
+
+---
+
+## Ejecutar el proyecto
+
+Se necesitan **dos terminales abiertas al mismo tiempo**:
+
+| Terminal | Carpeta | Comando | Resultado |
+|---|---|---|---|
+| 1 | raíz | `php artisan serve` | API en `localhost:8000` |
+| 2 | `frontend/` | `npm run dev` | Interfaz en `localhost:5173` |
+
+También hay que tener **MySQL encendido** desde el panel de XAMPP.
+
+---
+
+## Estructura del frontend
+
+```
+frontend/src/
+├── types/index.ts        # Tipos de la API — COMPARTIDO
+├── api/client.ts         # Cliente HTTP — COMPARTIDO
+├── styles/global.css     # Variables de color y tipografía — COMPARTIDO
+├── services/             # Una función por endpoint
+│   ├── membresias.ts     # Gabriel
+│   ├── comunidades.ts    # Milena
+│   └── actividades.ts    # Carla
+├── pages/                # Una carpeta de pantallas por módulo
+└── App.tsx               # Rutas — COMPARTIDO
+```
+
+**Archivos compartidos:** `types/index.ts`, `api/client.ts`, `styles/global.css` y `App.tsx`. Son los únicos donde puede haber conflictos de Git; coordinar antes de modificarlos.
+
+### Convenciones
+
+- **Estilos:** CSS Modules (`NombrePagina.module.css`), un archivo por pantalla. Usar siempre las variables de `global.css` (`var(--color-primario)`), nunca colores en duro.
+- **Llamadas a la API:** siempre a través de `services/`. Ningún componente escribe una URL directamente.
+- **Tipos:** todo lo que devuelve la API debe estar declarado en `types/index.ts`. Si agregas un endpoint, agrega su tipo.
+
+---
+
+## Rutas del frontend
+
+| Ruta | Pantalla | Responsable |
+|---|---|---|
+| `/panel/padron` | Padrón de miembros | Gabriel |
+| `/panel/solicitudes` | Solicitudes de ingreso | Gabriel |
+| `/comunidades/:id` | Perfil de comunidad y solicitud de ingreso | Gabriel |
+| `/comunidades` | Catálogo de comunidades | Milena — pendiente |
+| `/actividades` | Cartelera de actividades | Carla — pendiente |
