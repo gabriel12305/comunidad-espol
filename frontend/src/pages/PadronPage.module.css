@@ -1,0 +1,136 @@
+.pagina {
+  padding: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.encabezado {
+  margin-bottom: 24px;
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--fuente-mono);
+  color: var(--color-texto);
+}
+
+.subtitulo {
+  color: var(--color-texto-suave);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.filtros {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--color-texto);
+}
+
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.tabla th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.tabla td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.tabla tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.aprobada {
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+.pendiente {
+  background: var(--color-alerta-fondo);
+  color: var(--color-alerta);
+}
+
+.rechazada {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.btnPrimario {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-primario);
+  color: white;
+  font-size: 13px;
+}
+
+.btnSecundario {
+  padding: 6px 14px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: 13px;
+}
+
+.btnPrimario:disabled,
+.btnSecundario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mensajeError {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radio);
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+  font-size: 13px;
+}
+
+.vacio {
+  padding: 40px;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.suave {
+  color: var(--color-texto-suave);
+}
