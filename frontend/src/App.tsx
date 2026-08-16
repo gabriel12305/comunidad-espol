@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-do
 import PadronPage from './pages/PadronPage';
 import SolicitudesPage from './pages/SolicitudesPage';
 import ComunidadPage from './pages/ComunidadPage';
+import ListadoActividades from './pages/Actividades/ListadoActividades';
+import RegistrarActividad from './pages/Actividades/RegistrarActividad';
 import styles from './App.module.css';
 
 export default function App() {
@@ -22,6 +24,18 @@ export default function App() {
           >
             Padrón
           </NavLink>
+          <NavLink
+            to="/panel/actividades/crear"
+            className={({ isActive }) => isActive ? styles.enlaceActivo : styles.enlace}
+          >
+            Registrar actividad
+          </NavLink>
+          <NavLink
+            to="/comunidades/1/actividades"
+            className={({ isActive }) => isActive ? styles.enlaceActivo : styles.enlace}
+          >
+            Historial de actividades
+          </NavLink>
         </div>
       </nav>
 
@@ -31,7 +45,6 @@ export default function App() {
         <Route path="/panel/padron" element={<PadronPage />} />
         <Route path="/panel/solicitudes" element={<SolicitudesPage />} />
         <Route path="/comunidades/:id" element={<ComunidadPage />} />
-
 
         {/* Milena*/}
 
@@ -45,14 +58,8 @@ export default function App() {
 
 
         {/*Carla*/}
-
-
-
-
-
-
-    
-
+        <Route path="/panel/actividades/crear" element={<RegistrarActividad />} />
+        <Route path="/comunidades/:id/actividades" element={<ListadoActividades />} />
 
       </Routes>
     </BrowserRouter>
