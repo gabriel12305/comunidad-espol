@@ -60,6 +60,24 @@ export interface ActividadFormData {
   descripcion: string;
 }
 
+// Parte de Milena
+export interface ComunidadesResponse {
+  total: number;
+  data: Comunidad[];
+}
+
+export interface ComunidadFormData {
+  nombre: string;
+  categoria: string;
+  facultad: string;
+  descripcion: string;
+  mision: string;
+  logo_url: string;
+  correo_contacto: string;
+  instagram: string;
+  fecha_fundacion: string;
+}
+
 export interface PadronResponse {
   comunidad: string;
   total: number;
