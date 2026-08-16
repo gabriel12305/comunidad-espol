@@ -1,0 +1,128 @@
+.pagina {
+  padding: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.encabezado {
+  margin-bottom: 24px;
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--fuente-mono);
+  color: var(--color-texto);
+}
+
+.subtitulo {
+  color: var(--color-texto-suave);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.filtros {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--color-texto);
+}
+
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itemTitulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.itemMeta {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-texto-suave);
+}
+
+.etiquetaTipo {
+  color: var(--color-texto);
+  font-weight: 500;
+}
+
+.separador {
+  margin: 0 6px;
+}
+
+.itemDescripcion {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-texto);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.proxima {
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+.pasada {
+  background: var(--color-alerta-fondo);
+  color: var(--color-alerta);
+}
+
+.mensajeError {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radio);
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+  font-size: 13px;
+}
+
+.vacio {
+  padding: 40px;
+  text-align: center;
+  color: var(--color-texto-suave);
+}

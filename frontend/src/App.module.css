@@ -1,0 +1,36 @@
+.nav {
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.navInterior {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 32px;
+}
+
+.marca {
+  font-family: var(--fuente-mono);
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid var(--color-primario);
+  border-radius: 6px;
+}
+
+.enlace {
+  color: var(--color-texto-suave);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.enlaceActivo {
+  color: var(--color-texto);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 2px solid var(--color-primario);
+  padding-bottom: 2px;
+}
