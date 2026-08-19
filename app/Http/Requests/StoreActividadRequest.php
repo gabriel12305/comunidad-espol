@@ -13,7 +13,7 @@ class StoreActividadRequest extends FormRequest
 
     public function rules(): array{
         return [
-            'user_id'     => 'required|exists:users,id',
+            'user_id'     => 'nullable|exists:users,id',
             'titulo'      => 'required|string|max:150',
             'tipo'        => 'required|string|max:50',
             'fecha'       => 'required|date',
@@ -24,7 +24,6 @@ class StoreActividadRequest extends FormRequest
 
     public function messages(): array{
         return [
-            'user_id.required'  => 'Debe indicar el usuario que registra la actividad.',
             'user_id.exists'    => 'El usuario indicado no existe.',
             'titulo.required'   => 'El título de la actividad es obligatorio.',
             'tipo.required'     => 'Debe indicar el tipo de actividad.',

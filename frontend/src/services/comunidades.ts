@@ -20,9 +20,8 @@ export function obtenerComunidad(id: number) {
   return api.get<MensajeResponse<Comunidad>>(`/comunidades/${id}`);
 }
 
-export function crearComunidad(userId: number, datos: ComunidadFormData) {
+export function crearComunidad(datos: ComunidadFormData) {
   return api.post<MensajeResponse<Comunidad>>('/comunidades', {
-    user_id: userId,
     nombre: datos.nombre,
     categoria: datos.categoria,
     facultad: datos.facultad,
@@ -37,12 +36,10 @@ export function crearComunidad(userId: number, datos: ComunidadFormData) {
 
 export function actualizarComunidad(
   id: number,
-  userId: number,
   datos: ComunidadFormData,
   activa: boolean
 ) {
   return api.put<MensajeResponse<Comunidad>>(`/comunidades/${id}`, {
-    user_id: userId,
     nombre: datos.nombre,
     categoria: datos.categoria,
     facultad: datos.facultad,

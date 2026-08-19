@@ -34,3 +34,24 @@
   border-bottom: 2px solid var(--color-primario);
   padding-bottom: 2px;
 }
+
+.navDerecha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.usuario {
+  font-size: 13px;
+  color: var(--color-texto-suave);
+}
+
+.btnSalir {
+  padding: 6px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: 13px;
+}

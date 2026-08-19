@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { api, ApiError } from '../api/client';
 import { obtenerPadron, solicitarIngreso } from '../services/membresias';
 import type { Comunidad, Membresia } from '../types';
 import styles from './ComunidadPage.module.css';
 
-const USUARIO_ID = 2; // TODO: vendrá del usuario autenticado
-
 export default function ComunidadPage() {
   const { id } = useParams<{ id: string }>();
   const comunidadId = Number(id);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const esLiderDeEstaComunidad = user?.comunidades_lideradas?.some((c) => c.id === comunidadId) ?? false;
 
   const [comunidad, setComunidad] = useState<Comunidad | null>(null);
   const [miMembresia, setMiMembresia] = useState<Membresia | null>(null);
@@ -34,8 +36,8 @@ export default function ComunidadPage() {
           setComunidad(resComunidad.data);
         }
 
-        if (resPadron) {
-          const mia = resPadron.data.find((m) => m.user_id === USUARIO_ID);
+        if (resPadron && user) {
+          const mia = resPadron.data.find((m) => m.user_id === user.id);
           setMiMembresia(mia ?? null);
         }
       })
@@ -44,15 +46,20 @@ export default function ComunidadPage() {
       });
 
     return () => { activo = false; };
-  }, [comunidadId]);
+  }, [comunidadId, user]);
 
   async function handleSolicitar() {
+    if (!user) {
+      navigate('/login', { state: { desde: `/comunidades/${comunidadId}` } });
+      return;
+    }
+
     setEnviando(true);
     setError(null);
     setExito(null);
 
     try {
-      const res = await solicitarIngreso(comunidadId, USUARIO_ID);
+      const res = await solicitarIngreso(comunidadId);
       setMiMembresia(res.data);
       setExito(res.message);
     } catch (e) {
@@ -88,6 +95,16 @@ export default function ComunidadPage() {
             <span className={styles.etiqueta}>{comunidad.facultad}</span>
           </div>
         )}
+
+        {esLiderDeEstaComunidad && (
+          <button
+            type="button"
+            className={styles.btnEditar}
+            onClick={() => navigate(`/panel/comunidades/${comunidadId}/editar`)}
+          >
+            Editar comunidad
+          </button>
+        )}
       </header>
 
       {error && <div className={styles.mensajeError}>{error}</div>}
@@ -110,13 +127,22 @@ export default function ComunidadPage() {
 
         <aside>
           <div className={styles.tarjeta}>
-            <button
-              className={styles.btnSolicitar}
-              disabled={enviando || miMembresia !== null}
-              onClick={handleSolicitar}
-            >
-              {enviando ? 'Enviando…' : 'Solicitar ingreso'}
-            </button>
+            {!user ? (
+              <p className={styles.avisoLogin}>
+                <Link to="/login" state={{ desde: `/comunidades/${comunidadId}` }}>
+                  Inicia sesión
+                </Link>{' '}
+                para solicitar tu ingreso a esta comunidad.
+              </p>
+            ) : (
+              <button
+                className={styles.btnSolicitar}
+                disabled={enviando || miMembresia !== null}
+                onClick={handleSolicitar}
+              >
+                {enviando ? 'Enviando…' : 'Solicitar ingreso'}
+              </button>
+            )}
 
             {miMembresia && (
               <p className={styles.estadoSolicitud}>

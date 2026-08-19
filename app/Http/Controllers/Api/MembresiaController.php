@@ -13,8 +13,9 @@ class MembresiaController extends Controller
     // POST /api/comunidades/{comunidadId}/solicitudes
     public function solicitar(StoreSolicitudRequest $request, $comunidadId){
         $comunidad = Comunidad::findOrFail($comunidadId);
+        $userId = $request->user()->id;
 
-        $yaExiste = Membresia::where('user_id', $request->user_id)
+        $yaExiste = Membresia::where('user_id', $userId)
             ->where('comunidad_id', $comunidad->id)
             ->exists();
 
@@ -25,7 +26,7 @@ class MembresiaController extends Controller
         }
 
         $membresia = Membresia::create([
-            'user_id'      => $request->user_id,
+            'user_id'      => $userId,
             'comunidad_id' => $comunidad->id,
             'rol'          => 'miembro',
             'estado'       => 'pendiente',
@@ -37,13 +38,24 @@ class MembresiaController extends Controller
         ], 201);
     }
 
-    // PATCH /api/solicitudes/{id}
     public function resolver(Request $request, $id){
         $datos = $request->validate([
             'estado' => 'required|in:aprobada,rechazada',
         ]);
 
         $membresia = Membresia::findOrFail($id);
+
+        $esLider = Membresia::where('comunidad_id', $membresia->comunidad_id)
+            ->where('user_id', $request->user()->id)
+            ->where('rol', 'presidente')
+            ->where('estado', 'aprobada')
+            ->exists();
+
+        if (!$esLider) {
+            return response()->json([
+                'message' => 'Solo el líder de la comunidad puede resolver esta solicitud.',
+            ], 403);
+        }
 
         if ($membresia->estado !== 'pendiente') {
             return response()->json([

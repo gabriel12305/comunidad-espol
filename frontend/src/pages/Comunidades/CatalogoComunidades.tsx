@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { obtenerComunidades } from '../../services/comunidades';
 import { ApiError } from '../../api/client';
 import type { Comunidad } from '../../types';
@@ -9,6 +10,7 @@ import styles from './CatalogoComunidades.module.css';
 // Requerimiento: Explorar catálogo de comunidades (lectura)
 export default function CatalogoComunidades() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const nombre = searchParams.get('nombre') ?? '';
   const categoria = searchParams.get('categoria') ?? '';
@@ -122,13 +124,15 @@ export default function CatalogoComunidades() {
                 <Link to={`/comunidades/${c.id}`} className={styles.btnVerPerfil}>
                   Ver comunidad
                 </Link>
-                <button
-                  type="button"
-                  className={styles.btnEditar}
-                  onClick={() => navigate(`/panel/comunidades/${c.id}/editar`)}
-                >
-                  Editar
-                </button>
+                {user?.comunidades_lideradas?.some((lid) => lid.id === c.id) && (
+                  <button
+                    type="button"
+                    className={styles.btnEditar}
+                    onClick={() => navigate(`/panel/comunidades/${c.id}/editar`)}
+                  >
+                    Editar
+                  </button>
+                )}
               </div>
             </div>
           ))}

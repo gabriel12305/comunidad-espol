@@ -9,8 +9,6 @@ import styles from './RegistrarComunidad.module.css';
 // Parte de Milena
 // Requerimiento: Registrar comunidad (escritura), incluye edición
 
-const USUARIO_ID = 1; // TODO: vendrá del usuario autenticado (líder de la comunidad)
-
 const FORM_VACIO: ComunidadFormData = {
   nombre: '',
   categoria: '',
@@ -103,8 +101,8 @@ export default function RegistrarComunidad() {
 
     try {
       const res = editando
-        ? await actualizarComunidad(comunidadId, USUARIO_ID, form, activa)
-        : await crearComunidad(USUARIO_ID, form);
+        ? await actualizarComunidad(comunidadId, form, activa)
+        : await crearComunidad(form);
 
       setExito(res.message);
       if (!editando) setForm(FORM_VACIO);

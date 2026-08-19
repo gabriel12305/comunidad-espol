@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { obtenerPadron, resolverSolicitud } from '../services/membresias';
 import { ApiError } from '../api/client';
 import type { Membresia, EstadoMembresia } from '../types';
 import styles from './SolicitudesPage.module.css';
-
-const COMUNIDAD_ID = 1; // TODO: vendrá del usuario autenticado
 
 const TABS: { valor: EstadoMembresia; etiqueta: string }[] = [
   { valor: 'pendiente',  etiqueta: 'Pendientes' },
@@ -21,6 +20,9 @@ function formatearFecha(iso: string) {
 }
 
 export default function SolicitudesPage() {
+  const { user } = useAuth();
+  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+
   const [solicitudes, setSolicitudes] = useState<Membresia[]>([]);
   const [tab, setTab] = useState<EstadoMembresia>('pendiente');
   const [cargando, setCargando] = useState(true);
@@ -29,10 +31,15 @@ export default function SolicitudesPage() {
   const [procesando, setProcesando] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!comunidadId) {
+      setCargando(false);
+      return;
+    }
+
     let activo = true;
     setCargando(true);
 
-    obtenerPadron(COMUNIDAD_ID, { estado: tab })
+    obtenerPadron(comunidadId, { estado: tab })
       .then((res) => {
         if (!activo) return;
         setSolicitudes(res.data);
@@ -46,7 +53,7 @@ export default function SolicitudesPage() {
       });
 
     return () => { activo = false; };
-  }, [tab]);
+  }, [comunidadId, tab]);
 
   async function handleResolver(id: number, estado: 'aprobada' | 'rechazada') {
     setProcesando(id);
@@ -91,6 +98,8 @@ export default function SolicitudesPage() {
       <div className={styles.tarjeta}>
         {cargando ? (
           <p className={styles.vacio}>Cargando solicitudes…</p>
+        ) : !comunidadId ? (
+          <p className={styles.vacio}>No lideras ninguna comunidad activa.</p>
         ) : solicitudes.length === 0 ? (
           <p className={styles.vacio}>No hay solicitudes en esta categoría.</p>
         ) : (

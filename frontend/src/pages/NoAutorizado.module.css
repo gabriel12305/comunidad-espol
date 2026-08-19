@@ -1,0 +1,33 @@
+.pagina {
+  padding: 32px;
+  max-width: 480px;
+  margin: 80px auto 0;
+  text-align: center;
+}
+
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 32px;
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--fuente-mono);
+  color: var(--color-texto);
+  margin-bottom: 12px;
+}
+
+.mensaje {
+  color: var(--color-texto-suave);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.enlace {
+  color: var(--color-primario);
+  font-weight: 500;
+  font-size: 13px;
+}

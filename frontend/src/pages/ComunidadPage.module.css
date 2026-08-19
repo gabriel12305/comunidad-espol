@@ -47,6 +47,28 @@
   margin-top: 10px;
 }
 
+.btnEditar {
+  margin-top: 14px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.avisoLogin {
+  font-size: 13px;
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.avisoLogin a {
+  color: var(--color-texto);
+  font-weight: 500;
+}
+
 .etiqueta {
   padding: 3px 10px;
   border: 1px solid var(--color-borde);
