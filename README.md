@@ -1,263 +1,157 @@
-# ComunidadESPOL
+---
+# ComunidadESPOL — Guía de instalación y ejecución
 
-Plataforma web para la gestión y difusión de comunidades estudiantiles de la ESPOL.
-
-Proyecto de la asignatura **Lenguajes de Programación** — FIEC, ESPOL, PAO 1 2026–2027.
-
-**Integrantes:** Milena Pazmiño · Gabriel Peláez · Carla Gutiérrez
+Plataforma web para la gestión de comunidades estudiantiles de la ESPOL.
+Backend en **Laravel 12 (PHP 8.2)** + Frontend en **React 19 (TypeScript, Vite)**, comunicados vía API REST con autenticación por sesión (Laravel Sanctum).
 
 ---
 
-## Stack
+## 1. Requisitos previos
 
-- **Back-end:** PHP 8.2 + Laravel 12 (API REST)
-- **Front-end:** TypeScript + React
-- **Base de datos:** MySQL 8
+Instalar antes de empezar:
 
----
+| Herramienta | Versión mínima | Notas |
+|---|---|---|
+| [PHP](https://www.php.net/) | 8.2 | Debe incluir la extensión `sqlite3` (viene activada por defecto en la mayoría de instalaciones) |
+| [Composer](https://getcomposer.org/) | 2.x | Gestor de dependencias de PHP |
+| [Node.js](https://nodejs.org/) | 20 o superior | Incluye `npm` |
 
-## Requisitos previos
-
-- [XAMPP](https://www.apachefriends.org/) con **PHP 8.2 o superior** (solo se usa el módulo MySQL)
-- [Composer](https://getcomposer.org/)
-- [Git](https://git-scm.com/)
-
-> En `C:\xampp\php\php.ini` deben estar activas (sin `;` al inicio) las extensiones:
-> `extension=zip`, `extension=pdo_mysql`, `extension=mbstring`
+No se necesita instalar MySQL, XAMPP ni ningún gestor de base de datos: el proyecto usa **SQLite**, que es un solo archivo local y no requiere servidor.
 
 ---
 
-## Instalación
+## 2. Obtener el proyecto
 
-### 1. Clonar el repositorio
+Descomprimir el `.zip` descargado de GitHub en cualquier carpeta, por ejemplo:
 
-```bash
-git clone https://github.com/USUARIO/comunidad-espol.git
-cd comunidad-espol
-```
+C:\proyectos\comunidad-espol
 
-### 2. Instalar dependencias
+Abrir una terminal (PowerShell o CMD) dentro de esa carpeta para los pasos siguientes.
+
+---
+
+## 3. Backend (Laravel)
+
+### 3.1 Instalar dependencias PHP
 
 ```bash
 composer install
-```
 
-### 3. Configurar el entorno
+3.2 Crear el archivo de entorno
 
-```bash
 copy .env.example .env
 php artisan key:generate
-```
 
-### 4. Crear la base de datos
+▎ No hace falta tocar nada más en .env: ya viene configurado con DB_CONNECTION=sqlite, y con FRONTEND_URL/SANCTUM_STATEFUL_DOMAINS apuntando a localhost:5173 (el puerto del frontend), que es lo necesario para que el login funcione.
 
-Enciende **MySQL** desde el panel de XAMPP, entra a `http://localhost/phpmyadmin` y crea una base de datos llamada `comunidad_espol` con cotejamiento `utf8mb4_unicode_ci`.
+3.3 Crear el archivo de base de datos
 
-### 5. Configurar la conexión
+SQLite guarda toda la base en un solo archivo. Hay que crearlo vacío antes de migrar:
 
-Abre el archivo `.env` y deja estas líneas así (descoméntalas si tienen `#`):
+type nul > database\database.sqlite
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=comunidad_espol
-DB_USERNAME=root
-DB_PASSWORD=
-```
+(en PowerShell también funciona: New-Item database\database.sqlite -ItemType File)
 
-### 6. Crear las tablas y cargar datos de prueba
+3.4 Crear las tablas y cargar datos de prueba
 
-```bash
 php artisan migrate --seed
-```
 
-### 7. Levantar el servidor
-
-```bash
-php artisan serve
-```
-
-La API queda disponible en `http://localhost:8000`.
+Esto crea las tablas dentro de database/database.sqlite y carga usuarios, comunidades y membresías de ejemplo (ver sección 6).
 
 ---
 
-## Datos de prueba
+4. Frontend (React)
 
-| Usuario | Correo | Matrícula |
-|---|---|---|
-| Ana Torres | ana@espol.edu.ec | 202201001 |
-| Luis Mora | luis@espol.edu.ec | 202201002 |
-| Sofía Vera | sofia@espol.edu.ec | 202201003 |
+4.1 Instalar dependencias
 
-Contraseña de todos: `password`
-
-Comunidades: Capítulo IEEE ESPOL (id 1), ACM ESPOL (id 2), Grupo de Teatro (id 3).
-
----
-
-## Endpoints
-
-Todos con prefijo `/api`. Enviar siempre los headers:
-
-```
-Accept: application/json
-Content-Type: application/json
-```
-
-Los códigos de estado usados son: `200` (OK), `201` (creado), `404` (no encontrado), `409` (conflicto con el estado actual) y `422` (error de validación).
-
-### Comunidades — Milena
-
-| Método | Ruta | Descripción | Respuesta |
-|---|---|---|---|
-| `GET` | `/comunidades` | Catálogo, con filtros por categoría, facultad y nombre | `{ data: Comunidad[] }` |
-| `GET` | `/comunidades/{id}` | Perfil de una comunidad. Devuelve 404 si el id no existe o no es numérico | `{ data: Comunidad }` |
-| `POST` | `/comunidades` | Registrar comunidad | `{ data: Comunidad }` |
-| `PUT` | `/comunidades/{id}` | Editar comunidad | `{ data: Comunidad }` |
-
-### Membresías — Gabriel
-
-| Método | Ruta | Descripción | Respuesta |
-|---|---|---|---|
-| `POST` | `/comunidades/{id}/solicitudes` | Solicitar ingreso. Body: `{ user_id }`. Devuelve 409 si ya existe una membresía | `{ message, data: Membresia }` |
-| `PATCH` | `/solicitudes/{id}` | Aprobar o rechazar. Body: `{ estado }` con valor `aprobada` o `rechazada`. Devuelve 409 si la solicitud ya fue resuelta | `{ message, data: Membresia }` |
-| `GET` | `/comunidades/{id}/miembros` | Padrón. Filtros opcionales por query string: `?estado=` y `?rol=` | `{ comunidad, total, data: Membresia[] }` |
-
-### Actividades — Carla
-
-| Método | Ruta | Descripción | Respuesta |
-|---|---|---|---|
-| `POST` | `/comunidades/{id}/actividades` | Registrar actividad | — |
-| `GET` | `/comunidades/{id}/actividades` | Historial de actividades de una comunidad | — |
-
-## Flujo de trabajo con Git
-
-Cada integrante trabaja en su propia rama:
-
-| Integrante | Rama |
-|---|---|
-| Milena | `feature/comunidades` |
-| Gabriel | `feature/membresias` |
-| Carla | `feature/actividades` |
-
-```bash
-git checkout -b feature/mi-modulo
-# ... trabajar ...
-git add .
-git commit -m "Descripción del cambio"
-git push -u origin feature/mi-modulo
-```
-
-**Antes de empezar a trabajar cada día:**
-
-```bash
-git checkout main
-git pull
-git checkout feature/mi-modulo
-git merge main
-```
-
-> En `routes/api.php` cada quien agrega sus rutas en su bloque comentado con su nombre. Es el único archivo donde puede haber conflictos.
-
----
-
-## Comandos útiles
-
-```bash
-php artisan serve              # Levantar el servidor
-php artisan migrate:fresh --seed   # Borrar y recrear todo (¡borra los datos!)
-php artisan route:list         # Ver todas las rutas registradas
-```
-
----
-
-## Notas
-
-- Los archivos `.env` y la carpeta `vendor/` **no se suben** al repositorio.
-- En esta etapa los endpoints no requieren autenticación; el `user_id` se envía en el cuerpo de la petición. El login se implementará en el siguiente avance.
-
----
-
-## Instalación del frontend
-
-Requisito adicional: [Node.js](https://nodejs.org/) 20 o superior.
-
-### 1. Instalar dependencias
-
-```bash
 cd frontend
 npm install
-```
 
-### 2. Configurar el entorno
+4.2 Configurar el entorno
 
-```bash
 copy .env.example .env
-```
 
-El archivo debe contener la URL de la API:
+Verificar que frontend/.env quede así (apunta al backend del paso 3):
 
-```env
+env
 VITE_API_URL=http://localhost:8000/api
-```
-
-> Si cambias el `.env`, hay que reiniciar `npm run dev`. Las variables se leen al arrancar.
-
-### 3. Levantar el servidor de desarrollo
-
-```bash
-npm run dev
-```
-
-El frontend queda en `http://localhost:5173`.
 
 ---
 
-## Ejecutar el proyecto
+5. Ejecutar el proyecto
 
-Se necesitan **dos terminales abiertas al mismo tiempo**:
+Se necesitan dos terminales abiertas al mismo tiempo:
 
-| Terminal | Carpeta | Comando | Resultado |
-|---|---|---|---|
-| 1 | raíz | `php artisan serve` | API en `localhost:8000` |
-| 2 | `frontend/` | `npm run dev` | Interfaz en `localhost:5173` |
+┌──────────┬───────────────────┬───────────────────┬───────────────────────────────────┐
+│ Terminal │      Carpeta      │      Comando      │             Resultado             │
+├──────────┼───────────────────┼───────────────────┼───────────────────────────────────┤
+│ 1        │ raíz del proyecto │ php artisan serve │ API en http://localhost:8000      │
+├──────────┼───────────────────┼───────────────────┼───────────────────────────────────┤
+│ 2        │ frontend/         │ npm run dev       │ Interfaz en http://localhost:5173 │
+└──────────┴───────────────────┴───────────────────┴───────────────────────────────────┘
 
-También hay que tener **MySQL encendido** desde el panel de XAMPP.
+▎ No usar composer run dev: ese script está pensado para el scaffolding por defecto de Laravel y no levanta el frontend real del proyecto (que vive en frontend/). Usar los dos comandos de la tabla, cada uno en su terminal.
 
----
-
-## Estructura del frontend
-
-```
-frontend/src/
-├── types/index.ts        # Tipos de la API — COMPARTIDO
-├── api/client.ts         # Cliente HTTP — COMPARTIDO
-├── styles/global.css     # Variables de color y tipografía — COMPARTIDO
-├── services/             # Una función por endpoint
-│   ├── membresias.ts     # Gabriel
-│   ├── comunidades.ts    # Milena
-│   └── actividades.ts    # Carla
-├── pages/                # Una carpeta de pantallas por módulo
-└── App.tsx               # Rutas — COMPARTIDO
-```
-
-**Archivos compartidos:** `types/index.ts`, `api/client.ts`, `styles/global.css` y `App.tsx`. Son los únicos donde puede haber conflictos de Git; coordinar antes de modificarlos.
-
-### Convenciones
-
-- **Estilos:** CSS Modules (`NombrePagina.module.css`), un archivo por pantalla. Usar siempre las variables de `global.css` (`var(--color-primario)`), nunca colores en duro.
-- **Llamadas a la API:** siempre a través de `services/`. Ningún componente escribe una URL directamente.
-- **Tipos:** todo lo que devuelve la API debe estar declarado en `types/index.ts`. Si agregas un endpoint, agrega su tipo.
+Abrir el navegador en http://localhost:5173.
 
 ---
 
-## Rutas del frontend
+6. Datos de prueba (seeder)
 
-| Ruta | Pantalla | Responsable |
-|---|---|---|
-| `/panel/padron` | Padrón de miembros | Gabriel |
-| `/panel/solicitudes` | Solicitudes de ingreso | Gabriel |
-| `/comunidades/:id` | Perfil de comunidad y solicitud de ingreso | Gabriel |
-| `/comunidades` | Catálogo de comunidades | Milena — pendiente |
-| `/actividades` | Cartelera de actividades | Carla — pendiente |
+Todos los usuarios tienen la contraseña: password
+
+┌────────────┬────────────────────┬───────────┬──────────────────────────────────────────┐
+│  Usuario   │       Correo       │ Matrícula │                   Rol                    │
+├────────────┼────────────────────┼───────────┼──────────────────────────────────────────┤
+│ Ana Torres │ ana@espol.edu.ec   │ 202201001 │ Líder (presidenta de IEEE ESPOL)         │
+├────────────┼────────────────────┼───────────┼──────────────────────────────────────────┤
+│ Luis Mora  │ luis@espol.edu.ec  │ 202201002 │ Estudiante (miembro aprobado de IEEE)    │
+├────────────┼────────────────────┼───────────┼──────────────────────────────────────────┤
+│ Sofía Vera │ sofia@espol.edu.ec │ 202201003 │ Estudiante (solicitud pendiente en IEEE) │
+└────────────┴────────────────────┴───────────┴──────────────────────────────────────────┘
+
+Comunidades precargadas: Capítulo IEEE ESPOL, ACM ESPOL, Grupo de Teatro.
+
+Flujo sugerido para probar
+
+1. Entrar a http://localhost:5173 → se ve el catálogo de comunidades (público, sin login).
+2. Iniciar sesión con ana@espol.edu.ec / password → Ana es líder, así que aparecen en el menú Solicitudes, Padrón y Registrar actividad.
+3. En Solicitudes, aprobar o rechazar la solicitud pendiente de Sofía.
+4. En Padrón, ver el listado de miembros de IEEE ESPOL.
+5. Cerrar sesión e iniciar con luis@espol.edu.ec / password → como no es líder, esas opciones no aparecen (solo puede ver el catálogo y registrar comunidades).
+
+---
+
+7. Problemas comunes
+
+┌───────────────────────┬──────────────────────────────────┬──────────────────────────────────────────────────────────────────┐
+│        Síntoma        │          Causa probable          │                             Solución                             │
+├───────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ Error al migrar:      │ No se creó                       │                                                                  │
+│ "unable to open       │ database/database.sqlite         │ Repetir el paso 3.3 antes de migrar                              │
+│ database file"        │                                  │                                                                  │
+├───────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ El login da error 500 │ El puerto del frontend no        │ Verificar que el frontend corra en :5173 y que .env tenga        │
+│  "Session store not   │ coincide con                     │ SANCTUM_STATEFUL_DOMAINS=localhost:5173,127.0.0.1:5173           │
+│ set on request"       │ SANCTUM_STATEFUL_DOMAINS en .env │                                                                  │
+├───────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ "No se pudo conectar  │ El backend (php artisan serve)   │ Verificar la terminal 1; debe decir Server running on            │
+│ con el servidor" en   │ no está corriendo                │ [http://127.0.0.1:8000]                                          │
+│ el navegador          │                                  │                                                                  │
+├───────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ Página en blanco o    │ frontend/.env no apunta al       │ Verificar VITE_API_URL=http://localhost:8000/api y reiniciar npm │
+│ error de CORS en la   │ backend correcto                 │  run dev (Vite solo lee .env al arrancar)                        │
+│ consola del navegador │                                  │                                                                  │
+├───────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ Las credenciales de   │ La base de datos no se sembró    │ Ejecutar php artisan migrate:fresh --seed (esto borra y recrea   │
+│ prueba no funcionan   │                                  │ todo)                                                            │
+└───────────────────────┴──────────────────────────────────┴──────────────────────────────────────────────────────────────────┘
+
+---
+
+8. Comandos útiles
+
+php artisan serve                    # Levantar la API
+php artisan migrate:fresh --seed     # Borrar y recargar la base con datos de prueba
+php artisan route:list               # Ver todas las rutas registradas
+php artisan tinker                   # Consola interactiva para inspeccionar datos
