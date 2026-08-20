@@ -67,7 +67,7 @@ class ComunidadController extends Controller
 
         // Quien registra la comunidad queda como su líder (presidente), aprobado de inmediato.
         Membresia::create([
-            'user_id'      => $request->user_id,
+            'user_id'      => $request->user()->id,
             'comunidad_id' => $comunidad->id,
             'rol'          => 'presidente',
             'estado'       => 'aprobada',
@@ -85,7 +85,7 @@ class ComunidadController extends Controller
         $comunidad = Comunidad::findOrFail($id);
 
         $esLider = Membresia::where('comunidad_id', $comunidad->id)
-            ->where('user_id', $request->user_id)
+            ->where('user_id', $request->user()->id)
             ->where('rol', 'presidente')
             ->where('estado', 'aprobada')
             ->exists();

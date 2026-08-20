@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { crearActividad } from '../../services/actividades';
 import { ApiError } from '../../api/client';
 import type { ActividadFormData } from '../../types';
 import styles from './RegistrarActividad.module.css';
-
-const USUARIO_ID = 1;
-const COMUNIDAD_ID = 1;
 
 const FORM_VACIO: ActividadFormData = {
   titulo: '',
@@ -28,6 +26,9 @@ function validar(datos: ActividadFormData): Record<string, string> {
 
 export default function RegistrarActividad() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+
   const [form, setForm] = useState<ActividadFormData>(FORM_VACIO);
   const [erroresCampo, setErroresCampo] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
@@ -41,6 +42,11 @@ export default function RegistrarActividad() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
+    if (!comunidadId) {
+      setError('No lideras ninguna comunidad activa para registrar actividades.');
+      return;
+    }
+
     const erroresCliente = validar(form);
     setErroresCampo(erroresCliente);
     if (Object.keys(erroresCliente).length > 0) return;
@@ -50,12 +56,11 @@ export default function RegistrarActividad() {
     setExito(null);
 
     try {
-      const res = await crearActividad(COMUNIDAD_ID, USUARIO_ID, form);
+      const res = await crearActividad(comunidadId, form);
       setExito(res.message);
       setForm(FORM_VACIO);
     } catch (e) {
       if (e instanceof ApiError && e.errors) {
-        // Errores 422 de Laravel: { campo: ["mensaje"] }
         const porCampo: Record<string, string> = {};
         for (const [campo, mensajes] of Object.entries(e.errors)) {
           porCampo[campo] = mensajes[0];
@@ -88,7 +93,7 @@ export default function RegistrarActividad() {
           <button
             type="button"
             className={styles.enlaceVerHistorial}
-            onClick={() => navigate(`/comunidades/${COMUNIDAD_ID}/actividades`)}
+            onClick={() => comunidadId && navigate(`/comunidades/${comunidadId}/actividades`)}
           >
             Ver historial
           </button>

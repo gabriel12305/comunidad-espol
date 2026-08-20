@@ -15,13 +15,11 @@ export function obtenerActividades(
 
 export function crearActividad(
   comunidadId: number,
-  userId: number,
   datos: ActividadFormData
 ) {
   return api.post<MensajeResponse<Actividad>>(
     `/comunidades/${comunidadId}/actividades`,
     {
-      user_id: userId,
       titulo: datos.titulo,
       tipo: datos.tipo,
       fecha: datos.fecha,

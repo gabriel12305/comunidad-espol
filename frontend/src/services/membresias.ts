@@ -13,10 +13,10 @@ export function obtenerPadron(
   return api.get<PadronResponse>(`/comunidades/${comunidadId}/miembros${qs}`);
 }
 
-export function solicitarIngreso(comunidadId: number, userId: number) {
+export function solicitarIngreso(comunidadId: number) {
   return api.post<MensajeResponse<Membresia>>(
     `/comunidades/${comunidadId}/solicitudes`,
-    { user_id: userId }
+    {}
   );
 }
 

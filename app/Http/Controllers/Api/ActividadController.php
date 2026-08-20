@@ -17,7 +17,7 @@ class ActividadController extends Controller
         $comunidad = Comunidad::findOrFail($comunidadId);
 
         $esLider = Membresia::where('comunidad_id', $comunidad->id)
-            ->where('user_id', $request->user_id)
+            ->where('user_id', $request->user()->id)
             ->where('rol', 'presidente')
             ->where('estado', 'aprobada')
             ->exists();
@@ -28,8 +28,6 @@ class ActividadController extends Controller
             ], 403);
         }
 
-        // comunidad_id se fija a partir de la ruta y no del cuerpo de la petición,
-        // como medida de protección frente a asignación masiva (mass assignment).
         $actividad = Actividad::create([
             'comunidad_id' => $comunidad->id,
             'titulo'       => $request->titulo,

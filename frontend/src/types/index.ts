@@ -1,8 +1,17 @@
+export type RolPrincipal = 'estudiante' | 'lider';
+
+export interface ComunidadLiderada {
+  id: number;
+  nombre: string;
+}
+
 export interface User {
   id: number;
   name: string;
   email?: string;
   matricula: string | null;
+  rol_principal?: RolPrincipal;
+  comunidades_lideradas?: ComunidadLiderada[];
 }
 
 export interface Comunidad {

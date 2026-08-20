@@ -16,7 +16,7 @@ class UpdateComunidadRequest extends FormRequest
         $comunidadId = $this->route('id');
 
         return [
-            'user_id'         => 'required|exists:users,id',
+            'user_id'         => 'nullable|exists:users,id',
             'nombre'          => [
                 'sometimes', 'required', 'string', 'max:150',
                 Rule::unique('comunidades', 'nombre')->ignore($comunidadId),
@@ -35,7 +35,6 @@ class UpdateComunidadRequest extends FormRequest
 
     public function messages(): array{
         return [
-            'user_id.required'  => 'Debe indicar el usuario que edita la comunidad.',
             'user_id.exists'    => 'El usuario indicado no existe.',
             'nombre.required'   => 'El nombre de la comunidad es obligatorio.',
             'nombre.unique'     => 'Ya existe una comunidad registrada con ese nombre.',

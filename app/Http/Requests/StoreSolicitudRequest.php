@@ -13,14 +13,13 @@ class StoreSolicitudRequest extends FormRequest
 
     public function rules(): array{
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',
         ];
     }
 
     public function messages(): array{
         return [
-            'user_id.required' => 'Debe indicar el estudiante que solicita el ingreso.',
-            'user_id.exists'   => 'El estudiante indicado no existe.',
+            'user_id.exists' => 'El estudiante indicado no existe.',
         ];
     }
 }

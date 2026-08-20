@@ -13,7 +13,7 @@ class StoreComunidadRequest extends FormRequest
 
     public function rules(): array{
         return [
-            'user_id'         => 'required|exists:users,id',
+            'user_id'         => 'nullable|exists:users,id',
             'nombre'          => 'required|string|max:150|unique:comunidades,nombre',
             'categoria'       => 'required|string|max:50',
             'facultad'        => 'required|string|max:50',
@@ -28,7 +28,6 @@ class StoreComunidadRequest extends FormRequest
 
     public function messages(): array{
         return [
-            'user_id.required'  => 'Debe indicar el usuario que crea la comunidad.',
             'user_id.exists'    => 'El usuario indicado no existe.',
             'nombre.required'   => 'El nombre de la comunidad es obligatorio.',
             'nombre.unique'     => 'Ya existe una comunidad registrada con ese nombre.',

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { obtenerPadron, resolverSolicitud } from '../services/membresias';
 import { ApiError } from '../api/client';
 import type { Membresia, EstadoMembresia } from '../types';
 import styles from './PadronPage.module.css';
-
-const COMUNIDAD_ID = 1; // TODO: vendrá de la ruta y del usuario autenticado
 
 const ETIQUETA_ESTADO: Record<EstadoMembresia, string> = {
   pendiente: 'Pendiente',
@@ -13,6 +12,9 @@ const ETIQUETA_ESTADO: Record<EstadoMembresia, string> = {
 };
 
 export default function PadronPage() {
+  const { user } = useAuth();
+  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+
   const [miembros, setMiembros] = useState<Membresia[]>([]);
   const [comunidad, setComunidad] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
@@ -22,10 +24,15 @@ export default function PadronPage() {
   const [procesando, setProcesando] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!comunidadId) {
+      setCargando(false);
+      return;
+    }
+
     let activo = true;
     setCargando(true);
 
-    obtenerPadron(COMUNIDAD_ID, { estado: filtroEstado, rol: filtroRol })
+    obtenerPadron(comunidadId, { estado: filtroEstado, rol: filtroRol })
       .then((res) => {
         if (!activo) return;
         setMiembros(res.data);
@@ -40,7 +47,7 @@ export default function PadronPage() {
       });
 
     return () => { activo = false; };
-  }, [filtroEstado, filtroRol]);
+  }, [comunidadId, filtroEstado, filtroRol]);
 
   async function handleResolver(id: number, estado: 'aprobada' | 'rechazada') {
     setProcesando(id);
@@ -95,6 +102,8 @@ export default function PadronPage() {
       <div className={styles.tarjeta}>
         {cargando ? (
           <p className={styles.vacio}>Cargando padrón…</p>
+        ) : !comunidadId ? (
+          <p className={styles.vacio}>No lideras ninguna comunidad activa.</p>
         ) : miembros.length === 0 ? (
           <p className={styles.vacio}>No hay miembros que coincidan con los filtros.</p>
         ) : (
