@@ -11,6 +11,7 @@ import ListadoActividades from './pages/Actividades/ListadoActividades';
 import RegistrarActividad from './pages/Actividades/RegistrarActividad';
 import CatalogoComunidades from './pages/Comunidades/CatalogoComunidades';
 import RegistrarComunidad from './pages/Comunidades/RegistrarComunidad';
+import MisComunidades from './pages/Comunidades/MisComunidades';
 import styles from './App.module.css';
 
 function Navegacion() {
@@ -42,6 +43,12 @@ function Navegacion() {
         {/* Panel de líder: solo visible para quien lidera alguna comunidad */}
         {esLider && (
           <>
+            <NavLink
+              to="/panel/mis-comunidades"
+              className={({ isActive }) => isActive ? styles.enlaceActivo : styles.enlace}
+            >
+              Mis comunidades
+            </NavLink>
             <NavLink
               to="/panel/solicitudes"
               className={({ isActive }) => isActive ? styles.enlaceActivo : styles.enlace}
@@ -111,6 +118,10 @@ export default function App() {
           <Route
             path="/panel/comunidades/:id/editar"
             element={<RoleRoute rol="lider"><RegistrarComunidad /></RoleRoute>}
+          />
+          <Route
+            path="/panel/mis-comunidades"
+            element={<RoleRoute rol="lider"><MisComunidades /></RoleRoute>}
           />
 
           {/* Gabriel — perfil de comunidad público, panel de líder protegido */}
