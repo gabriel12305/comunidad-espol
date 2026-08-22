@@ -103,3 +103,8 @@ export interface MensajeResponse<T> {
   message: string;
   data: T;
 }
+
+export interface SolicitudesLideradasResponse {
+  total: number;
+  data: Membresia[];
+}

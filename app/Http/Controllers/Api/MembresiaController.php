@@ -76,6 +76,31 @@ class MembresiaController extends Controller
         ]);
     }
 
+
+    // GET /api/solicitudes
+    public function solicitudesLideradas(Request $request){
+        $userId = $request->user()->id;
+
+        $comunidadIds = Membresia::where('user_id', $userId)
+            ->where('rol', 'presidente')
+            ->where('estado', 'aprobada')
+            ->pluck('comunidad_id');
+
+        $query = Membresia::whereIn('comunidad_id', $comunidadIds)
+            ->with(['user:id,name,matricula', 'comunidad:id,nombre']);
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        $solicitudes = $query->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'total' => $solicitudes->count(),
+            'data'  => $solicitudes,
+        ]);
+    }
+
     // GET /api/comunidades/{comunidadId}/miembros
     public function padron(Request $request, $comunidadId){
         $comunidad = Comunidad::findOrFail($comunidadId);

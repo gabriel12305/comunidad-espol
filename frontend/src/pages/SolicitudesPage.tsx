@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { obtenerPadron, resolverSolicitud } from '../services/membresias';
+import { obtenerSolicitudesLideradas, resolverSolicitud } from '../services/membresias';
 import { ApiError } from '../api/client';
 import type { Membresia, EstadoMembresia } from '../types';
 import styles from './SolicitudesPage.module.css';
@@ -21,7 +21,7 @@ function formatearFecha(iso: string) {
 
 export default function SolicitudesPage() {
   const { user } = useAuth();
-  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+  const tieneComunidades = (user?.comunidades_lideradas?.length ?? 0) > 0;
 
   const [solicitudes, setSolicitudes] = useState<Membresia[]>([]);
   const [tab, setTab] = useState<EstadoMembresia>('pendiente');
@@ -31,29 +31,29 @@ export default function SolicitudesPage() {
   const [procesando, setProcesando] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!comunidadId) {
-      setCargando(false);
-      return;
-    }
+      if (!tieneComunidades) {
+        setCargando(false);
+        return;
+      }
 
-    let activo = true;
-    setCargando(true);
+      let activo = true;
+      setCargando(true);
 
-    obtenerPadron(comunidadId, { estado: tab })
-      .then((res) => {
-        if (!activo) return;
-        setSolicitudes(res.data);
-        setError(null);
-      })
-      .catch((e: ApiError) => {
-        if (activo) setError(e.message);
-      })
-      .finally(() => {
-        if (activo) setCargando(false);
-      });
+      obtenerSolicitudesLideradas({ estado: tab })
+        .then((res) => {
+          if (!activo) return;
+          setSolicitudes(res.data);
+          setError(null);
+        })
+        .catch((e: ApiError) => {
+          if (activo) setError(e.message);
+        })
+        .finally(() => {
+          if (activo) setCargando(false);
+        });
 
-    return () => { activo = false; };
-  }, [comunidadId, tab]);
+      return () => { activo = false; };
+    }, [tieneComunidades, tab]);
 
   async function handleResolver(id: number, estado: 'aprobada' | 'rechazada') {
     setProcesando(id);
@@ -98,7 +98,7 @@ export default function SolicitudesPage() {
       <div className={styles.tarjeta}>
         {cargando ? (
           <p className={styles.vacio}>Cargando solicitudes…</p>
-        ) : !comunidadId ? (
+        ) : !tieneComunidades ? (
           <p className={styles.vacio}>No lideras ninguna comunidad activa.</p>
         ) : solicitudes.length === 0 ? (
           <p className={styles.vacio}>No hay solicitudes en esta categoría.</p>
@@ -107,6 +107,7 @@ export default function SolicitudesPage() {
             <thead>
               <tr>
                 <th>Estudiante</th>
+                <th>Comunidad</th>
                 <th>Matrícula</th>
                 <th>Fecha</th>
                 <th>Estado</th>
@@ -117,6 +118,7 @@ export default function SolicitudesPage() {
               {solicitudes.map((s) => (
                 <tr key={s.id}>
                   <td>{s.user?.name ?? <span className={styles.suave}>—</span>}</td>
+                  <td>{s.comunidad?.nombre ?? <span className={styles.suave}>—</span>}</td>
                   <td>{s.user?.matricula ?? <span className={styles.suave}>—</span>}</td>
                   <td>{formatearFecha(s.created_at)}</td>
                   <td>

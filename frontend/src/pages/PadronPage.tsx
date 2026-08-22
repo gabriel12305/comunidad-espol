@@ -13,7 +13,8 @@ const ETIQUETA_ESTADO: Record<EstadoMembresia, string> = {
 
 export default function PadronPage() {
   const { user } = useAuth();
-  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+  const comunidadesLideradas = user?.comunidades_lideradas ?? [];
+  const [comunidadId, setComunidadId] = useState<number | null>(null);
 
   const [miembros, setMiembros] = useState<Membresia[]>([]);
   const [comunidad, setComunidad] = useState('');
@@ -22,6 +23,12 @@ export default function PadronPage() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [procesando, setProcesando] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (comunidadId === null && comunidadesLideradas.length > 0) {
+      setComunidadId(comunidadesLideradas[0].id);
+    }
+  }, [comunidadesLideradas, comunidadId]);
 
   useEffect(() => {
     if (!comunidadId) {
@@ -76,6 +83,16 @@ export default function PadronPage() {
       {error && <div className={styles.mensajeError}>{error}</div>}
 
       <div className={styles.filtros}>
+        <select
+          className={styles.select}
+          value={comunidadId ?? ''}
+          onChange={(e) => setComunidadId(Number(e.target.value))}
+        >
+          {comunidadesLideradas.map((c) => (
+            <option key={c.id} value={c.id}>{c.nombre}</option>
+          ))}
+        </select>
+        
         <select
           className={styles.select}
           value={filtroEstado}

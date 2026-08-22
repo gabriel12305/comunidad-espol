@@ -23,7 +23,8 @@ Route::patch('/solicitudes/{id}', [MembresiaController::class, 'resolver'])
     ->middleware('role:lider'); // solo un líder resuelve solicitudes
 Route::get('/comunidades/{comunidadId}/miembros', [MembresiaController::class, 'padron'])
     ->middleware('role'); // padrón visible para cualquier usuario identificado
-
+Route::get('/solicitudes', [MembresiaController::class, 'solicitudesLideradas'])
+    ->middleware('role:lider'); // trae las solicitudes de TODAS las comunidades que lidera el usuario
 
 
 

@@ -1,5 +1,5 @@
 import { api } from '../api/client';
-import type { Membresia, PadronResponse, MensajeResponse } from '../types';
+import type { Membresia, PadronResponse, MensajeResponse, SolicitudesLideradasResponse } from '../types';
 
 export function obtenerPadron(
   comunidadId: number,
@@ -28,4 +28,12 @@ export function resolverSolicitud(
     `/solicitudes/${solicitudId}`,
     { estado }
   );
+}
+
+export function obtenerSolicitudesLideradas(filtros: { estado?: string } = {}) {
+  const params = new URLSearchParams();
+  if (filtros.estado) params.append('estado', filtros.estado);
+
+  const qs = params.toString() ? `?${params}` : '';
+  return api.get<SolicitudesLideradasResponse>(`/solicitudes${qs}`);
 }

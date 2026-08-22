@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { obtenerActividades } from '../../services/actividades';
+import { useAuth } from '../../context/AuthContext';
 import { ApiError } from '../../api/client';
 import type { Actividad } from '../../types';
 import styles from './ListadoActividades.module.css';
@@ -29,6 +30,9 @@ function esProxima(fechaIso: string) {
 export default function ListadoActividades() {
   const { id } = useParams<{ id: string }>();
   const comunidadId = Number(id);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const comunidadesLideradas = user?.comunidades_lideradas ?? [];
 
   const [searchParams, setSearchParams] = useSearchParams();
   const tipo = searchParams.get('tipo') ?? '';
@@ -82,6 +86,17 @@ export default function ListadoActividades() {
       {error && <div className={styles.mensajeError}>{error}</div>}
 
       <div className={styles.filtros}>
+        {comunidadesLideradas.length > 1 && (
+          <select
+            className={styles.select}
+            value={comunidadId}
+            onChange={(e) => navigate(`/comunidades/${e.target.value}/actividades`)}
+          >
+            {comunidadesLideradas.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
+        )}
         <select
           className={styles.select}
           value={tipo}

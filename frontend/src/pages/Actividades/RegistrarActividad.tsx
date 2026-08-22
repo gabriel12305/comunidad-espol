@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -27,13 +27,19 @@ function validar(datos: ActividadFormData): Record<string, string> {
 export default function RegistrarActividad() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const comunidadId = user?.comunidades_lideradas?.[0]?.id ?? null;
+  const comunidadesLideradas = user?.comunidades_lideradas ?? [];
+  const [comunidadId, setComunidadId] = useState<number | null>(null);
 
   const [form, setForm] = useState<ActividadFormData>(FORM_VACIO);
   const [erroresCampo, setErroresCampo] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exito, setExito] = useState<string | null>(null);
+  useEffect(() => {
+    if (comunidadId === null && comunidadesLideradas.length > 0) {
+      setComunidadId(comunidadesLideradas[0].id);
+    }
+  }, [comunidadesLideradas, comunidadId]);
 
   function actualizarCampo<K extends keyof ActividadFormData>(campo: K, valor: ActividadFormData[K]) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
@@ -102,6 +108,18 @@ export default function RegistrarActividad() {
 
       <form className={styles.tarjeta} onSubmit={handleSubmit} noValidate>
         <div className={styles.campo}>
+          <label className={styles.etiqueta} htmlFor="comunidad">Comunidad *</label>
+          <select
+            id="comunidad"
+            className={styles.input}
+            value={comunidadId ?? ''}
+            onChange={(e) => setComunidadId(Number(e.target.value))}
+          >
+            {comunidadesLideradas.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
+          
           <label className={styles.etiqueta} htmlFor="titulo">Título *</label>
           <input
             id="titulo"

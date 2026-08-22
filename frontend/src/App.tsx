@@ -60,6 +60,12 @@ function Navegacion() {
             >
               Registrar actividad
             </NavLink>
+            <NavLink
+              to={`/comunidades/${user?.comunidades_lideradas?.[0]?.id}/actividades`}
+              className={({ isActive }) => isActive ? styles.enlaceActivo : styles.enlace}
+            >
+              Historial de actividades
+            </NavLink>
           </>
         )}
 
