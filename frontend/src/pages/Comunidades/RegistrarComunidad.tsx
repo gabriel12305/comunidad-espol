@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { crearComunidad, actualizarComunidad, obtenerComunidad } from '../../services/comunidades';
 import { ApiError } from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
 import type { ComunidadFormData } from '../../types';
 import styles from './RegistrarComunidad.module.css';
 
@@ -41,6 +42,7 @@ export default function RegistrarComunidad() {
   const editando = id !== undefined;
   const comunidadId = Number(id);
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
 
   const [form, setForm] = useState<ComunidadFormData>(FORM_VACIO);
   const [activa, setActiva] = useState(true);
@@ -105,7 +107,14 @@ export default function RegistrarComunidad() {
         : await crearComunidad(form);
 
       setExito(res.message);
-      if (!editando) setForm(FORM_VACIO);
+      if (!editando) {
+        setForm(FORM_VACIO);
+        // Registrar la comunidad te vuelve su líder (presidente) en el backend, pero la
+        // sesión en memoria (rol_principal, comunidades_lideradas) sigue siendo la de
+        // antes de crearla. Sin este refresco, RoleRoute bloquea el acceso a "Editar"
+        // porque cree que sigues siendo "estudiante".
+        checkAuth();
+      }
     } catch (e) {
       if (e instanceof ApiError && e.errors) {
         // Errores 422 de Laravel: { campo: ["mensaje"] }
